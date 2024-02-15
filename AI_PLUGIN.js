@@ -2,8 +2,8 @@
 
 (() => {
     // These values must be updated when required
-    const extAPI = chrome; // chrome / browser
-    const extVersion = "1.9.0";
+    const extAPI = chrome;
+    const extVersion = "1.0.0";
 
     const metadata = {
         version: 1,
@@ -13,11 +13,9 @@
         tool: {
             name: "CAI Tools",
             version: extVersion,
-            url: "https://www.github.com/irsat000/CAI-Tools"
+            //url: "https://www.github.com/irsat000/CAI-Tools"
         }
     };
-
-    // AJAX hook
     const xhook_lib__url = extAPI.runtime.getURL("scripts/xhook.min.js");
     const xhookScript = document.createElement("script");
     xhookScript.crossOrigin = "anonymous";
@@ -26,7 +24,6 @@
         initialize_options_DOM(window.location.pathname);
     };
     xhookScript.src = xhook_lib__url;
-    // Web socket hook
     const wsHook_lib__url = extAPI.runtime.getURL("scripts/wsHook.js");
     const wsHookScript = document.createElement("script");
     wsHookScript.crossOrigin = "anonymous";
@@ -34,46 +31,30 @@
     wsHookScript.onload = function () {
     };
     wsHookScript.src = wsHook_lib__url;
-    // Insert hooks
     const firstScript = document.getElementsByTagName("script")[0];
     firstScript.parentNode.insertBefore(xhookScript, firstScript);
     firstScript.parentNode.insertBefore(wsHookScript, firstScript);
-
-
-    // A function to handle mutations
     function handleLocationChange(mutationsList, observer) {
-        // Check if the URL has changed
         if (window.location.href !== observer.lastHref) {
             observer.lastHref = window.location.href;
-
-            // Perform actions based on the URL change
             const path = window.location.pathname;
             if (path === "/chat" || path === "/chat2" || path === "/histories") {
                 initialize_options_DOM(path);
             }
             else {
-                // Handle the modal reset
                 handleProgressInfoMeta("(Loading...)");
                 cleanDOM();
             }
         }
     }
-    // Create a MutationObserver instance
     const locationObserver = new MutationObserver(handleLocationChange);
-    // Initialize the lastHref property
     locationObserver.lastHref = window.location.href;
-    // Observe changes to the window.location.href
     locationObserver.observe(document, {
         childList: true,
         attributes: false,
         subtree: true,
         characterData: false
     });
-
-
-
-    // FETCH MESSAGES
-
     function handleProgressInfoMeta(text) {
         if (document.querySelector('meta[cait_progressInfo]')) {
             document.querySelector('meta[cait_progressInfo]')
@@ -93,7 +74,6 @@
             element.remove();
         });
     }
-
     function createFetchStartedMeta_Conversation(text, extId) {
         if (document.querySelector('meta[cai_fetchStarted_conver][cai_fetchStatusExtId="' + extId + '"]')) {
             document.querySelector('meta[cai_fetchStarted_conver][cai_fetchStatusExtId="' + extId + '"]')
@@ -106,7 +86,6 @@
             document.head.appendChild(meta);
         }
     }
-
     function createFetchStartedMeta(text) {
         const charId = getCharId();
         if (charId == null) {
@@ -123,7 +102,6 @@
             document.head.appendChild(meta);
         }
     }
-
     function applyConversationMeta(converExtId, newSimplifiedChat) {
         if (document.querySelector(`meta[cai_converExtId="${converExtId}"]`)) {
             document.querySelector(`meta[cai_converExtId="${converExtId}"]`)
