@@ -180,9 +180,6 @@
     };
 
     const fetchMessagesChat2 = async ({ AccessToken, nextToken, converExtId, chatData, fetchDataType }) => {
-        //Will be similar to fetchMessages. Next token will come from the previous fetch.
-        //Last chat will give next token too.
-        //New fetch will repond with null next_token and empty turns.
         await new Promise(resolve => setTimeout(resolve, 200));
         let url = `https://neo.character.ai/turns/${converExtId}/`;
         await fetch(url + (nextToken ? `?next_token=${nextToken}` : ""), {
@@ -215,12 +212,9 @@
                     }
 
                     return;
-                    // If next_token is null, stops function and prevents calling function more
-                    // This was the last fetch for the chat
                 }
 
                 chatData.turns = [...chatData.turns, ...data.turns];
-
                 await fetchMessagesChat2({
                     AccessToken: AccessToken,
                     nextToken: data.meta.next_token,
@@ -245,7 +239,6 @@
     const fetchHistory = async (charId) => {
         const metaChar = document.querySelector('meta[cai_charid="' + charId + '"]');
         const AccessToken = getAccessToken();
-        // Safety check
         if (metaChar == null || AccessToken == null) {
             return;
         }
@@ -263,7 +256,6 @@
         let fetchedChatNumber = 1;
         const historyLength = (chatList.history1?.length || 0) + (chatList.history2?.length || 0);
 
-        // Fetch chat2 history
         if (chatList.history2) {
             const chatData = { history: [], turns: [] }
             for (const chatId of chatList.history2) {
@@ -280,9 +272,6 @@
 
             finalHistory = [...finalHistory, ...chatData.history];
         }
-
-        // Fetch chat1 history
-        // Will be after chat2 because if there is chat2 then the character is primarily chat2 char
         if (chatList.history1) {
             const chatData = { history: [], turns: [] }
             for (const chatId of chatList.history1) {
@@ -333,12 +322,6 @@
             await fetchMessagesChat2(args);
         }
     }
-
-    // FETCH END
-
-
-    // CAI Tools - DOM
-
     function initialize_options_DOM(path) {
         if (path === '/histories') {
             const intervalId = setInterval(() => {
@@ -370,14 +353,10 @@
                 }
             }, 1000);
         }
-        // Else, the user is not in relevant pages.
     }
 
     function create_options_DOM_Conversation(container, pageType) {
-        //clean if already exists
         cleanDOM();
-
-        //Create cai tools in dom
         const cai_tools_string = `
             <div class="cait_button-cont" data-tool="cai_tools">
                 <div class="dragCaitBtn">&#9946;</div>
@@ -388,7 +367,6 @@
                     <div class="cait-header">
                         <h4>CAI Tools</h4><span class="cait-close">x</span>
                     </div>
-                    <a href="https://www.patreon.com/Irsat" target="_blank" class="donate_link">Support me on Patreon</a>
                     <div class="cait-body">
                         <span class="cait_warning"></span>
                         <h6>Character</h6>
@@ -455,7 +433,6 @@
         `;
         container.appendChild(parseHTML_caiTools(cai_tools_string));
 
-        //open modal upon click on btn
         container.querySelector('.cai_tools-btn').addEventListener('mouseup', clickOnBtn);
         container.querySelector('.cai_tools-btn').addEventListener('touchstart', clickOnBtn);
 
