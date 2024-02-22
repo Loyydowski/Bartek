@@ -1,7 +1,6 @@
 
 
 (() => {
-    // These values must be updated when required
     const extAPI = chrome;
     const extVersion = "1.0.0";
 
